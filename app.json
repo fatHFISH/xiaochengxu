@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/search/search",
+    "pages/favorites/favorites",
+    "pages/coupons/coupons",
+    "pages/logistics/logistics"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "乌东苗寨小卖部",
+    "navigationBarBackgroundColor": "#1E5631",
+    "backgroundColor": "#F8F9FA"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

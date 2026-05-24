@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(ssh -T git@github.com)",
+      "Read(//c/Users/94529/.ssh/**)",
+      "Bash(nslookup github.com)",
+      "Bash(ping github.com)",
+      "Bash(git config *)",
+      "Bash(git rm *)"
+    ]
+  }
+}

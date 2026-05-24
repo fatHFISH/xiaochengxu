@@ -1,0 +1,28 @@
+<view class="logistics-page">
+  <view class="page-header">
+    <text class="page-title">物流跟踪</text>
+  </view>
+
+  <view class="empty-state" wx:if="{{orders.length === 0}}">
+    <text class="empty-icon"></text>
+    <text class="empty-text">暂无物流信息</text>
+  </view>
+
+  <view class="order-list" wx:else>
+    <view class="order-card" wx:for="{{orders}}" wx:key="index" bindtap="onOrderTap" data-id="{{item.orderId}}">
+      <view class="order-header">
+        <text class="order-no">订单号: {{item.orderId}}</text>
+        <text class="order-status {{item.status}}">{{item.statusText}}</text>
+      </view>
+      <view class="order-logistics">
+        <view class="logistics-info">
+          <text class="logistics-company">{{item.company}}</text>
+          <text class="logistics-number">{{item.number}}</text>
+        </view>
+        <view class="logistics-trace" wx:if="{{item.latestTrace}}">
+          <text class="trace-text">{{item.latestTrace}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

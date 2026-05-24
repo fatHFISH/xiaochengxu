@@ -1,0 +1,31 @@
+<view class="favorites-page">
+  <view class="page-header">
+    <text class="page-title">我的收藏</text>
+    <text class="page-count">共 {{total}} 件</text>
+  </view>
+
+  <view class="empty-state" wx:if="{{favorites.length === 0}}">
+    <text class="empty-icon">❤️</text>
+    <text class="empty-text">还没有收藏商品</text>
+    <view class="empty-btn" bindtap="goHome">去逛逛</view>
+  </view>
+
+  <view class="product-list" wx:else>
+    <view class="product-card" wx:for="{{favorites}}" wx:key="index" bindtap="onProductTap" data-id="{{item.id}}">
+      <view class="product-image-box" style="background-color: {{item.bgColor}}">
+        <image class="product-image" src="{{item.image}}" mode="aspectFill" binderror="onImageError"></image>
+      </view>
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-desc">{{item.desc}}</text>
+        <view class="product-bottom">
+          <text class="product-price">¥{{item.price}}</text>
+          <view class="product-actions">
+            <view class="action-btn cart-btn" catchtap="onAddCart" data-id="{{item.id}}">加购</view>
+            <view class="action-btn remove-btn" catchtap="onRemove" data-id="{{item.id}}">移除</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

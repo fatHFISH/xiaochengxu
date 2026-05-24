@@ -1,0 +1,118 @@
+.logistics-page {
+  min-height: 100vh;
+  background: #F7F3EC;
+  padding-bottom: 40rpx;
+}
+
+.page-header {
+  padding: 24rpx;
+  background: #FFFFFF;
+  margin-bottom: 16rpx;
+}
+
+.page-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3E3A35;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.order-list {
+  padding: 0 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.order-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 14rpx rgba(60,50,30,0.05);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.order-no {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.order-status {
+  font-size: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.order-status.pending {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.order-status.shipped,
+.order-status.delivering {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+.order-status.completed {
+  background: #E8F5E9;
+  color: #1E5631;
+}
+
+.order-logistics {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.logistics-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logistics-company {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #3E3A35;
+}
+
+.logistics-number {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.logistics-trace {
+  padding: 16rpx;
+  background: #F8F9FA;
+  border-radius: 12rpx;
+}
+
+.trace-text {
+  font-size: 26rpx;
+  color: #6B6055;
+}

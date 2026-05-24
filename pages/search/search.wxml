@@ -1,0 +1,69 @@
+<view class="search-page">
+  <!-- 搜索栏 -->
+  <view class="search-header">
+    <view class="search-input-wrap">
+      <text class="search-icon"></text>
+      <input class="search-input" value="{{keyword}}" placeholder="搜索商品名称" bindinput="onInput" bindconfirm="onSearch" focus="{{true}}" />
+      <text class="search-clear" wx:if="{{keyword}}" bindtap="onClear"></text>
+    </view>
+    <text class="search-cancel" bindtap="onCancel">取消</text>
+  </view>
+
+  <!-- 搜索历史 -->
+  <view class="search-section" wx:if="{{!keyword && searchHistory.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">搜索历史</text>
+      <text class="section-clear" bindtap="onClearHistory">清除</text>
+    </view>
+    <view class="history-tags">
+      <view class="history-tag-wrap" wx:for="{{searchHistory}}" wx:key="index">
+        <view class="history-tag" bindtap="onHistoryTap" data-keyword="{{item}}">{{item}}</view>
+        <text class="history-tag-del" bindtap="onDeleteHistoryItem" data-keyword="{{item}}">✕</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 热搜 -->
+  <view class="search-section" wx:if="{{!keyword && hotSearches.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">🔥 热门搜索</text>
+    </view>
+    <view class="hot-tags">
+      <view class="hot-tag {{index < 3 ? 'hot' : ''}}" wx:for="{{hotSearches}}" wx:key="index" bindtap="onHistoryTap" data-keyword="{{item}}">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="search-section" wx:if="{{keyword}}">
+    <view class="result-header">
+      <text class="result-count">找到 {{total}} 件商品</text>
+      <view class="sort-tabs">
+        <text class="sort-tab {{sortBy === 'default' ? 'active' : ''}}" bindtap="onSortTap" data-sort="default">综合</text>
+        <text class="sort-tab {{sortBy === 'sales' ? 'active' : ''}}" bindtap="onSortTap" data-sort="sales">销量</text>
+        <text class="sort-tab {{sortBy === 'price' ? 'active' : ''}}" bindtap="onSortTap" data-sort="price">价格</text>
+      </view>
+    </view>
+
+    <view class="product-list" wx:if="{{searchResults.length > 0}}">
+      <view class="product-card" wx:for="{{searchResults}}" wx:key="index" bindtap="onProductTap" data-id="{{item.id}}">
+        <view class="product-image-box" style="background-color: {{item.bgColor}}">
+          <image class="product-image" src="{{item.image}}" mode="aspectFill" binderror="onImageError"></image>
+        </view>
+        <view class="product-info">
+          <text class="product-name">{{item.name}}</text>
+          <text class="product-desc">{{item.desc}}</text>
+          <view class="product-bottom">
+            <text class="product-price">¥{{item.price}}</text>
+            <text class="product-sales">已售{{item.sales}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-result" wx:else>
+      <text class="empty-icon">🔍</text>
+      <text class="empty-text">抱歉，没有找到相关商品</text>
+      <text class="empty-hint">换个词试试吧</text>
+    </view>
+  </view>
+</view>

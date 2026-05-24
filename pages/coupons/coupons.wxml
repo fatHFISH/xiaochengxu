@@ -1,0 +1,63 @@
+<view class="coupons-page">
+  <!-- 返回按钮 -->
+  <view class="back-btn" bindtap="goBack">
+    <text class="back-arrow">‹</text>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-title-bar">
+    <text class="page-title-text">我的优惠券</text>
+  </view>
+
+  <!-- 可领取优惠券 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">可领取优惠券</text>
+    </view>
+    <view class="coupon-list" wx:if="{{availableCoupons.length > 0}}">
+      <view class="coupon-card" wx:for="{{availableCoupons}}" wx:key="index">
+        <view class="coupon-left">
+          <text class="coupon-value">¥{{item.value}}</text>
+          <text class="coupon-condition">满{{item.minAmount}}可用</text>
+        </view>
+        <view class="coupon-divider"></view>
+        <view class="coupon-right">
+          <text class="coupon-name">{{item.name}}</text>
+          <text class="coupon-time">{{item.startTimeStr}} - {{item.endTimeStr}}</text>
+          <view class="coupon-receive-btn {{item.received >= item.total ? 'disabled' : ''}}" 
+                bindtap="onReceive" data-id="{{item._id}}" 
+                wx:if="{{item.received < item.total}}">立即领取</view>
+          <text class="coupon-received" wx:else>已领完</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="empty-icon"></text>
+      <text class="empty-text">暂无可领取优惠券</text>
+    </view>
+  </view>
+
+  <!-- 我的优惠券 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">我的优惠券</text>
+    </view>
+    <view class="my-coupon-list" wx:if="{{myCoupons.length > 0}}">
+      <view class="my-coupon-card {{item.status === 'used' ? 'used' : ''}}" wx:for="{{myCoupons}}" wx:key="index">
+        <view class="my-coupon-left">
+          <text class="my-coupon-value">¥{{item.value}}</text>
+          <text class="my-coupon-condition">满{{item.minAmount}}可用</text>
+        </view>
+        <view class="my-coupon-divider"></view>
+        <view class="my-coupon-right">
+          <text class="my-coupon-status">{{item.status === 'unused' ? '未使用' : '已使用'}}</text>
+          <text class="my-coupon-time">有效期至 {{item.expiresAtStr}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">还没有优惠券</text>
+    </view>
+  </view>
+</view>

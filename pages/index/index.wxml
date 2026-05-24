@@ -1,0 +1,891 @@
+<view class="page-container">
+
+  <!-- 返回按钮（首页隐藏） -->
+  <view class="back-btn {{currentPage === 0 || currentPage === 8 || currentPage === 9 ? 'hidden' : ''}}" bindtap="goBack">
+    <text class="back-arrow">‹</text>
+  </view>
+
+  <!-- ==================== 页面1: 首页 Home ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 0}}">
+    <scroll-view class="page-scroll home-scroll" scroll-y bindscroll="onPageScroll" refresher-enabled refresher-default-text="下拉刷新" refresher-refreshing="{{refreshingHome}}" bindrefresherrefresh="onRefreshHome">
+    <view class="home-page">
+
+      <!-- 骨架屏 -->
+      <view class="home-skeleton" wx:if="{{loading}}">
+        <view class="skeleton-banner"></view>
+        <view class="skeleton-categories">
+          <view class="skeleton-cat" wx:for="{{4}}" wx:key="index">
+            <view class="skeleton-circle"></view>
+            <view class="skeleton-line short"></view>
+          </view>
+        </view>
+        <view class="skeleton-section">
+          <view class="skeleton-line medium"></view>
+          <view class="skeleton-products">
+            <view class="skeleton-product-card" wx:for="{{4}}" wx:key="index">
+              <view class="skeleton-square"></view>
+              <view class="skeleton-line long"></view>
+              <view class="skeleton-line short"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 正常内容 -->
+      <block wx:if="{{!loading}}">
+      <!-- 顶部大图 Banner — 全屏宽度 -->
+      <view class="hero-banner">
+        <image class="hero-banner-image" src="{{bannerImage}}" mode="aspectFill" binderror="onImageError"></image>
+        <view class="hero-overlay"></view>
+        <view class="hero-content">
+          <text class="hero-title">乌东苗寨的小卖部</text>
+          <text class="hero-subtitle">来自大山的自然馈赠</text>
+        </view>
+        <!-- 搜索栏 — Banner 底部嵌入 -->
+        <view class="search-bar-home">
+          <view class="search-bar-home-wrapper">
+            <text class="search-bar-home-icon">☌</text>
+            <input class="search-bar-home-input" value="{{searchKeyword}}" placeholder="搜索商品" placeholder-class="search-bar-home-placeholder" bindinput="onSearchInput" bindconfirm="onSearch" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 分类图标 — 正圆形实拍图 -->
+      <view class="home-categories">
+        <view class="home-category-item" wx:for="{{homeCategories}}" wx:key="index" bindtap="onCategoryTap" data-id="{{item.id}}">
+          <view class="home-category-img-wrap">
+            <image class="home-category-image" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud}}" data-key="homeCategories[{{index}}].image"></image>
+          </view>
+          <text class="home-category-name">{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 中间运营 Banner — 苗寨全景 -->
+      <view class="second-banner">
+        <image class="second-banner-image" src="{{secondBannerImage}}" mode="aspectFill" binderror="onImageError"></image>
+        <view class="second-banner-overlay"></view>
+        <view class="second-banner-content">
+          <text class="second-banner-title">乌东苗寨</text>
+          <text class="second-banner-subtitle">传承与自然的味道</text>
+          <view class="second-banner-btn">探索好物</view>
+        </view>
+      </view>
+
+      <!-- 服务标签 — 圆形浅色图标 -->
+      <view class="service-tags">
+        <view class="service-tag-item" wx:for="{{serviceTags}}" wx:key="index">
+          <view class="service-tag-circle"><image class="service-tag-icon" src="{{item.icon}}" mode="aspectFit"></image></view>
+          <text class="service-tag-text">{{item.text}}</text>
+        </view>
+      </view>
+
+      <!-- 人气推荐 -->
+      <view class="home-section-header">
+        <view class="home-section-title-row">
+          <view class="home-section-tag"></view>
+          <text class="home-section-title">人气推荐</text>
+        </view>
+        <text class="home-section-more">更多 ›</text>
+      </view>
+      <view class="home-product-grid">
+        <view class="home-product-card" wx:for="{{hotProducts}}" wx:key="index" bindtap="onProductTap" data-id="{{item.id}}">
+          <view class="home-product-img-box" style="background-color: {{item.bgColor}}">
+            <text class="home-product-emoji">{{item.emoji}}</text>
+            <image class="product-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="hotProducts[{{index}}].image"></image>
+          </view>
+          <view class="home-product-info">
+            <text class="home-product-name">{{item.name}}</text>
+            <view class="home-product-meta">
+              <text class="home-product-price">¥{{item.price}}</text>
+              <text class="home-product-sales">已售{{item.sales}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部占位 -->
+      <view class="home-bottom-placeholder"></view>
+      </block>
+
+    </view>
+    </scroll-view>
+  </view>
+
+  <!-- ==================== 页面2: 商品分类 Category ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 1}}">
+    <view class="category-header">
+      <text class="category-header-title">商品分类</text>
+    </view>
+    <view class="category-page">
+      <view class="category-left">
+        <scroll-view scroll-y class="category-nav">
+          <view wx:for="{{categoryList}}" wx:key="index"
+                class="category-nav-item {{selectedCategory === index ? 'active' : ''}}"
+                bindtap="onSelectCategory" data-index="{{index}}">
+            <view class="category-nav-indicator" wx:if="{{selectedCategory === index}}"></view>
+            <text class="category-nav-text">{{item}}</text>
+          </view>
+        </scroll-view>
+      </view>
+      <view class="category-right">
+        <scroll-view scroll-y class="category-products">
+          <view class="category-product-list">
+            <view class="category-product-item" wx:for="{{categoryProducts}}" wx:key="id" bindtap="onProductTap" data-id="{{item.id}}">
+              <view class="category-product-image-box">
+                <image class="product-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="categoryProducts[{{index}}].image"></image>
+              </view>
+              <view class="category-product-info">
+                <text class="category-product-name">{{item.name}}</text>
+                <text class="category-product-desc">{{item.desc}}</text>
+                <view class="category-product-bottom">
+                  <text class="category-product-price">¥{{item.price}}</text>
+                  <text class="category-product-sales">已售{{item.sales}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="category-loading" wx:if="{{categoryLoading}}">
+              <view class="skeleton skeleton-product"></view>
+              <view class="skeleton skeleton-product"></view>
+              <view class="skeleton skeleton-product"></view>
+            </view>
+            <view class="category-empty" wx:if="{{categoryEmpty && !categoryLoading && !categoryHasMore}}">
+              <text class="category-empty-icon">📦</text>
+              <text class="category-empty-text">暂无商品</text>
+            </view>
+            <view class="load-more-btn" wx:if="{{categoryHasMore}}" bindtap="onLoadMoreCategory">
+              <text class="load-more-text" wx:if="{{!categoryLoading}}">加载更多</text>
+              <text class="load-more-text" wx:else>加载中...</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 页面3-8 ... ==================== -->
+
+  <!-- 底部导航栏 — 全局共享 -->
+  <view class="home-bottom-nav">
+    <view class="home-bottom-nav-item {{currentNavTab === index ? 'active' : ''}}" wx:for="{{homeNavTabs}}" wx:key="index" bindtap="onNavTabTap" data-index="{{index}}">
+      <view class="home-bottom-nav-icon-wrap">
+        <image class="home-bottom-nav-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      </view>
+      <text class="home-bottom-nav-label">{{item.label}}</text>
+      <view class="home-bottom-nav-badge" wx:if="{{item.badge > 0}}">{{item.badge}}</view>
+    </view>
+  </view>
+
+  <!-- 页面底部安全区占位 -->
+  <view class="global-bottom-safe"></view>
+
+  <!-- ==================== 页面3: 商品详情 Product Details ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 2}}">
+    <view class="product-detail-page">
+      <scroll-view class="detail-scroll" scroll-y bindscroll="onPageScroll">
+      <swiper class="product-swiper" indicator-dots autoplay circular>
+        <swiper-item wx:for="{{productDetail.images}}" wx:key="index">
+          <view class="product-detail-image-box" style="background-color: {{productDetail.bgColor}}" bindtap="onPreviewImage" data-src="{{item}}">
+            <text class="detail-emoji">{{productDetail.emoji}}</text>
+            <image class="product-image-real" src="{{item}}" mode="aspectFill" binderror="onImageError" data-cloud="{{productDetail.imageCloud || item}}" data-key="productDetail.images[{{index}}]"></image>
+          </view>
+        </swiper-item>
+      </swiper>
+
+      <!-- 商品信息 -->
+      <view class="product-detail-info">
+        <view class="product-detail-shop-row" style="display: flex; align-items: center; margin-bottom: 16rpx;">
+          <view style="width: 36rpx; height: 36rpx; background: linear-gradient(135deg, #1E5631 0%, #2D7A4A 100%); border-radius: 8rpx; display: flex; align-items: center; justify-content: center; margin-right: 12rpx;">
+            <text style="font-size: 20rpx; color: #FFFFFF; font-weight: bold;">乌</text>
+          </view>
+          <text style="font-size: 24rpx; color: #6B6055; font-weight: 500; margin-right: 12rpx;">乌东苗寨小卖部</text>
+          <text style="font-size: 20rpx; color: #1E5631; background: #E8F5E9; padding: 4rpx 12rpx; border-radius: 9999rpx; font-weight: 500;">官方直营</text>
+        </view>
+        <view class="product-detail-price-row">
+          <text class="product-detail-price">¥{{productDetail.price}}</text>
+          <text class="product-detail-origin-price">¥{{productDetail.originalPrice}}</text>
+        </view>
+        <text class="product-detail-name">{{productDetail.name}}</text>
+        <view class="product-detail-tags">
+          <text class="product-tag" wx:for="{{productDetail.tags}}" wx:key="index">{{item}}</text>
+        </view>
+        <view class="product-detail-sales-row">
+          <text>销量 {{productDetail.sales}}</text>
+          <text>库存 {{productDetail.stock}}</text>
+        </view>
+      </view>
+
+      <!-- 服务承诺 -->
+      <view style="padding: 24rpx 32rpx; background: #FFFDF7; margin: 20rpx 24rpx; border-radius: 28rpx; box-shadow: 0 2rpx 14rpx rgba(60,50,30,0.05); border: 1rpx solid rgba(180,160,130,0.08);">
+        <view style="display: flex; justify-content: space-around;">
+          <view style="display: flex; align-items: center;">
+            <text style="font-size: 28rpx; color: #1E5631; margin-right: 8rpx;">✓</text>
+            <text style="font-size: 24rpx; color: #6B6055;">产地直供</text>
+          </view>
+          <view style="display: flex; align-items: center;">
+            <text style="font-size: 28rpx; color: #1E5631; margin-right: 8rpx;">✓</text>
+            <text style="font-size: 24rpx; color: #6B6055;">正品保证</text>
+          </view>
+          <view style="display: flex; align-items: center;">
+            <text style="font-size: 28rpx; color: #1E5631; margin-right: 8rpx;">✓</text>
+            <text style="font-size: 24rpx; color: #6B6055;">极速发货</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="product-detail-desc">
+        <text class="product-detail-desc-title">商品详情</text>
+        <text class="product-detail-desc-content">{{productDetail.description}}</text>
+      </view>
+
+      <view class="product-detail-options">
+        <view class="quantity-selector">
+          <text class="quantity-label">数量</text>
+          <view class="quantity-control">
+            <view class="quantity-btn {{productDetail.quantity <= 1 ? 'disabled' : ''}}" bindtap="onDecreaseQuantity">-</view>
+            <text class="quantity-value">{{productDetail.quantity}}</text>
+            <view class="quantity-btn" bindtap="onIncreaseQuantity">+</view>
+          </view>
+        </view>
+      </view>
+      </scroll-view>
+
+      <view class="detail-bottom-bar">
+        <view class="detail-bottom-left">
+          <view class="detail-bottom-icon" bindtap="onDetailCustomerService">
+            <text class="icon-text">💬</text>
+            <text class="icon-label">客服</text>
+          </view>
+          <view class="detail-bottom-icon" bindtap="onToggleFavorite">
+            <text class="icon-text">{{productDetail.isFavorite ? '❤️' : '🤍'}}</text>
+            <text class="icon-label">收藏</text>
+          </view>
+        </view>
+        <view class="detail-bottom-right">
+          <view class="btn-add-cart" bindtap="onAddToCart">加入购物车</view>
+          <view class="btn-buy-now" bindtap="onBuyNow">立即购买</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 页面4: 购物车 Shopping Cart ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 3}}">
+    <view class="cart-page">
+      <view class="cart-header">
+        <text class="cart-shop-name">乌东苗寨小卖部</text>
+        <text class="cart-edit-btn" bindtap="onToggleEdit">{{isEditCart ? '完成' : '编辑'}}</text>
+      </view>
+
+      <scroll-view class="cart-scroll" scroll-y bindscroll="onPageScroll">
+
+      <view class="cart-empty" wx:if="{{cartItems.length === 0}}">
+        <text class="cart-empty-text">购物车是空的</text>
+        <view class="cart-empty-btn" bindtap="switchPage" data-index="0">去逛逛</view>
+      </view>
+
+      <view class="cart-list" wx:else>
+        <view class="cart-item" wx:for="{{cartItems}}" wx:key="index">
+          <view class="cart-item-checkbox" bindtap="onToggleCartItem" data-index="{{index}}">
+            <view class="checkbox-circle {{item.selected ? 'checked' : ''}}">
+              <text class="checkbox-check" wx:if="{{item.selected}}">✓</text>
+            </view>
+          </view>
+          <view class="cart-item-img-box" style="background-color: {{item.bgColor}}">
+            <image class="cart-item-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="cartItems[{{index}}].image"></image>
+          </view>
+          <view class="cart-item-info">
+            <text class="cart-item-name">{{item.name}}</text>
+            <text class="cart-item-spec">{{item.spec}}</text>
+            <view class="cart-item-bottom">
+              <text class="cart-item-price">¥{{item.price}}</text>
+              <view class="cart-item-stepper">
+                <view class="stepper-btn" bindtap="onCartDecrease" data-index="{{index}}">−</view>
+                <view class="stepper-line"></view>
+                <text class="stepper-num">{{item.quantity}}</text>
+                <view class="stepper-line"></view>
+                <view class="stepper-btn" bindtap="onCartIncrease" data-index="{{index}}">+</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      </scroll-view>
+
+      <view class="cart-footer-bar" wx:if="{{cartItems.length > 0}}">
+        <view class="footer-left">
+          <view class="footer-checkbox" bindtap="onToggleSelectAll">
+            <view class="checkbox-circle {{isSelectAll ? 'checked' : ''}}">
+              <text class="checkbox-check" wx:if="{{isSelectAll}}">✓</text>
+            </view>
+          </view>
+          <text class="footer-select-all">全选</text>
+        </view>
+        <view class="footer-center" wx:if="{{!isEditCart}}">
+          <text class="footer-total-label">合计:</text>
+          <text class="footer-total-price">¥{{totalPrice}}</text>
+        </view>
+        <view class="footer-checkout-btn" wx:if="{{!isEditCart}}" bindtap="onCheckout">
+          <text class="checkout-text">去结算({{selectedCount}})</text>
+        </view>
+        <view class="footer-delete-btn" wx:if="{{isEditCart}}" bindtap="onDeleteCartItems">
+          <text class="checkout-text">删除</text>
+        </view>
+      </view>
+
+      <!-- 底部导航栏 -->
+      <view class="home-bottom-nav">
+        <view class="home-bottom-nav-item {{currentNavTab === index ? 'active' : ''}}" wx:for="{{homeNavTabs}}" wx:key="index" bindtap="onNavTabTap" data-index="{{index}}">
+          <view class="home-bottom-nav-icon-wrap">
+            <image class="home-bottom-nav-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          </view>
+          <text class="home-bottom-nav-label">{{item.label}}</text>
+          <view class="home-bottom-nav-badge" wx:if="{{item.badge > 0}}">{{item.badge}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 页面5: 地址选择 Address Selection ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 4}}">
+    <scroll-view class="page-scroll" scroll-y bindscroll="onPageScroll">
+    <view class="address-page">
+      <view class="address-header">
+        <text class="address-title">选择收货地址</text>
+      </view>
+
+      <view class="address-list">
+        <view class="address-card {{selectedAddressIndex === index ? 'selected' : ''}}"
+              wx:for="{{addressList}}" wx:key="index"
+              bindtap="onSelectAddress" data-index="{{index}}">
+          <view class="address-card-left">
+            <view class="address-info">
+              <view class="address-user-row">
+                <text class="address-user-name">{{item.name}}</text>
+                <text class="address-user-phone">{{item.phone}}</text>
+              </view>
+              <text class="address-detail">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</text>
+            </view>
+            <view class="address-default-tag" wx:if="{{item.is_default}}">默认</view>
+          </view>
+          <view class="address-card-right">
+            <text class="address-edit-btn" bindtap="onEditAddress" data-index="{{index}}">编辑</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="add-address-btn" bindtap="onAddAddress">
+        <text class="add-address-icon" style="margin-right: 16rpx;">+</text>
+        <text class="add-address-text">添加新地址</text>
+      </view>
+
+      <view class="order-items-section">
+        <text class="order-items-title">本次下单</text>
+        <scroll-view scroll-x class="order-items-scroll">
+          <view class="order-items-list">
+            <view class="order-item-thumb-box" wx:for="{{orderItems}}" wx:key="index" style="background-color: {{item.bgColor}}">
+              <text class="product-emoji-thumb">{{item.emoji}}</text>
+              <image class="order-item-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="orderItems[{{index}}].image"></image>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+    </scroll-view>
+
+      <!-- 地址选择底部栏（来自结算流程才显示） -->
+  <view class="address-footer-bar" wx:if="{{addressFromCheckout}}">
+    <view class="address-footer-btn" bindtap="onProceedToCheckout">
+      <text class="address-footer-text">确认地址，去支付</text>
+    </view>
+  </view>
+  </view>
+
+  <!-- ==================== 页面6: 确认支付订单 Checkout ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 5}}">
+    <view class="checkout-page">
+      <scroll-view class="checkout-scroll" scroll-y bindscroll="onPageScroll">
+      <view class="checkout-address" bindtap="onCheckoutAddressTap">
+        <view class="checkout-address-info">
+          <text class="checkout-address-name">{{checkoutAddress.name}}</text>
+          <text class="checkout-address-phone">{{checkoutAddress.phone}}</text>
+          <text class="checkout-address-detail">{{checkoutAddress.province}}{{checkoutAddress.city}}{{checkoutAddress.district}}{{checkoutAddress.detail}}</text>
+        </view>
+        <text class="checkout-address-arrow">></text>
+      </view>
+
+      <view class="checkout-shop">
+        <view style="display: flex; align-items: center;">
+          <view style="width: 44rpx; height: 44rpx; background: linear-gradient(135deg, #1E5631 0%, #2D7A4A 100%); border-radius: 12rpx; display: flex; align-items: center; justify-content: center; margin-right: 16rpx;">
+            <text style="font-size: 22rpx; color: #FFFFFF; font-weight: bold;">乌</text>
+          </view>
+          <text class="checkout-shop-name" style="font-size: 28rpx; font-weight: 700; color: #3E3A35; margin-right: 16rpx;">乌东苗寨小卖部</text>
+          <text style="font-size: 20rpx; color: #1E5631; background: #E8F5E9; padding: 4rpx 12rpx; border-radius: 9999rpx; font-weight: 500;">官方直营</text>
+        </view>
+      </view>
+
+      <view class="checkout-items">
+        <view class="checkout-item" wx:for="{{checkoutItems}}" wx:key="index">
+          <view class="checkout-item-image-box" style="background-color: {{item.bgColor}}">
+            <text class="product-emoji-small">{{item.emoji}}</text>
+            <image class="checkout-item-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="checkoutItems[{{index}}].image"></image>
+          </view>
+          <view class="checkout-item-info">
+            <text class="checkout-item-name">{{item.name}}</text>
+            <view class="checkout-item-bottom">
+              <text class="checkout-item-price">¥{{item.price}}</text>
+              <text class="checkout-item-quantity">x{{item.quantity}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="checkout-fee-row">
+        <text class="checkout-fee-label">运费</text>
+        <text class="checkout-fee-value">¥0</text>
+      </view>
+      <view class="checkout-fee-row" bindtap="onToggleCouponPicker">
+        <text class="checkout-fee-label">优惠券</text>
+        <text class="checkout-fee-value {{selectedCoupon ? 'checkout-fee-discount' : ''}}">{{selectedCoupon ? '-¥' + selectedCoupon.value : '无'}}</text>
+        <text class="checkout-address-arrow" style="margin-left: 8rpx; font-size: 24rpx;">{{selectedCoupon ? '' : '>'}}</text>
+        <text wx:if="{{selectedCoupon}}" style="margin-left: 8rpx; font-size: 22rpx; color: #D35D47; padding: 2rpx 10rpx; border: 1rpx solid #D35D47; border-radius: 9999rpx;" bindtap="onRemoveSelectedCoupon" catchtap>移除</text>
+      </view>
+
+      <view class="payment-methods">
+        <text class="payment-methods-title">支付方式</text>
+        <view class="payment-method-item {{selectedPayment === 'wechat' ? 'selected' : ''}}" bindtap="onSelectPayment" data-method="wechat">
+          <view class="payment-method-left">
+            <text class="payment-method-icon">💬</text>
+            <text class="payment-method-name">微信支付</text>
+          </view>
+          <view class="payment-method-radio {{selectedPayment === 'wechat' ? 'checked' : ''}}"><view class="radio-inner" wx:if="{{selectedPayment === 'wechat'}}"></view></view>
+        </view>
+        <view class="payment-method-item {{selectedPayment === 'alipay' ? 'selected' : ''}}" bindtap="onSelectPayment" data-method="alipay">
+          <view class="payment-method-left">
+            <text class="payment-method-icon">💙</text>
+            <text class="payment-method-name">支付宝</text>
+          </view>
+          <view class="payment-method-radio {{selectedPayment === 'alipay' ? 'checked' : ''}}"><view class="radio-inner" wx:if="{{selectedPayment === 'alipay'}}"></view></view>
+        </view>
+        <view class="payment-method-item {{selectedPayment === 'bank' ? 'selected' : ''}}" bindtap="onSelectPayment" data-method="bank">
+          <view class="payment-method-left">
+            <text class="payment-method-icon">💳</text>
+            <text class="payment-method-name">银行卡</text>
+          </view>
+          <view class="payment-method-radio {{selectedPayment === 'bank' ? 'checked' : ''}}"><view class="radio-inner" wx:if="{{selectedPayment === 'bank'}}"></view></view>
+        </view>
+      </view>
+      </scroll-view>
+
+      <!-- 优惠券选择弹窗 -->
+      <view class="coupon-picker-mask" wx:if="{{showCouponPicker}}" bindtap="onToggleCouponPicker"></view>
+      <view class="coupon-picker" wx:if="{{showCouponPicker}}">
+        <view class="coupon-picker-header">
+          <text class="coupon-picker-title">选择优惠券</text>
+          <text class="coupon-picker-close" bindtap="onToggleCouponPicker">✕</text>
+        </view>
+        <scroll-view class="coupon-picker-list" scroll-y>
+          <view class="coupon-picker-item" wx:for="{{myAvailableCoupons}}" wx:key="index" bindtap="onSelectCheckoutCoupon" data-index="{{index}}">
+            <view class="coupon-picker-left">
+              <text class="coupon-picker-value">¥{{item.value}}</text>
+              <text class="coupon-picker-condition">满{{item.minAmount}}可用</text>
+            </view>
+            <view class="coupon-picker-divider"></view>
+            <view class="coupon-picker-right">
+              <text class="coupon-picker-name">{{item.name || '优惠券'}}</text>
+            </view>
+            <view class="coupon-picker-check {{selectedCoupon && (selectedCoupon._id === item._id) ? 'checked' : ''}}">
+              <text wx:if="{{selectedCoupon && (selectedCoupon._id === item._id)}}">✓</text>
+            </view>
+          </view>
+          <view class="coupon-picker-empty" wx:if="{{myAvailableCoupons.length === 0}}">
+            <text>暂无可用优惠券</text>
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="checkout-bottom-bar">
+        <view class="checkout-bottom-left">
+          <text class="checkout-total-label">合计:</text>
+          <text class="checkout-total-original" wx:if="{{selectedCoupon}}" style="font-size: 24rpx; color: #BBB5AA; text-decoration: line-through; margin-right: 8rpx;">¥{{checkoutTotal}}</text>
+          <text class="checkout-total-price">¥{{selectedCoupon ? checkoutPayAmount : checkoutTotal}}</text>
+        </view>
+        <view class="checkout-bottom-right" bindtap="onSubmitOrder">
+          <text class="checkout-submit-btn">立即支付</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 页面7: 支付成功 Success Page ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 6}}">
+    <scroll-view class="page-scroll" scroll-y bindscroll="onPageScroll">
+    <view class="success-page">
+      <view class="success-header">
+        <view class="success-icon-wrapper">
+          <icon type="success" size="60" color="#1E5631"></icon>
+        </view>
+        <text class="success-title">支付成功</text>
+        <text class="success-order-no">订单号: {{orderNo}}</text>
+        <text class="success-tip">预计 2-3 天送达</text>
+      </view>
+
+      <view class="success-btn-wrapper">
+        <view class="success-btn" bindtap="onViewOrder">查看订单</view>
+      </view>
+
+      <view class="recommend-section">
+        <text class="recommend-title">🌿 为您推荐</text>
+        <view class="recommend-grid">
+          <view class="recommend-item" wx:for="{{recommendProducts}}" wx:key="index" bindtap="onProductTap" data-id="{{item.id}}">
+            <view class="recommend-item-image-box" style="background-color: {{item.bgColor}}">
+              <text class="product-emoji">{{item.emoji}}</text>
+              <image class="recommend-item-image-real" src="{{item.image}}" mode="aspectFill" binderror="onImageError" data-cloud="{{item.image_cloud || item.image}}" data-key="recommendProducts[{{index}}].image"></image>
+            </view>
+            <text class="recommend-item-name">{{item.name}}</text>
+            <text class="recommend-item-price">¥{{item.price}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    </scroll-view>
+  </view>
+
+  <!-- ==================== 页面8: 个人中心 User Profile ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 7}}">
+    <scroll-view class="page-scroll" scroll-y bindscroll="onPageScroll">
+    <view class="profile-page">
+      <!-- 顶部标题栏 -->
+      <view class="profile-title-bar">
+        <text class="profile-title-text">我的</text>
+      </view>
+
+      <!-- 用户信息卡片 -->
+      <view class="profile-user-card">
+        <view class="profile-user-left">
+          <image class="profile-avatar-img" src="{{userInfo.avatar}}" mode="aspectFill" binderror="onImageError" data-cloud="{{userInfo.avatarCloud}}" data-key="userInfo.avatar"></image>
+          <view class="profile-user-text">
+            <text class="profile-nickname">{{userInfo.nickname}}</text>
+            <text class="profile-welcome">{{userInfo.welcome}}</text>
+          </view>
+        </view>
+        <view class="profile-user-right">
+          <text class="profile-settings-icon">⚙</text>
+        </view>
+      </view>
+
+      <!-- 我的订单 -->
+      <view class="profile-order-section">
+        <view class="profile-order-header">
+          <text class="profile-order-title">我的订单</text>
+          <view class="profile-order-more" bindtap="onViewAllOrders">
+            <text class="profile-order-more-text">全部订单</text>
+            <text class="profile-order-arrow">›</text>
+          </view>
+        </view>
+        <view class="profile-order-icons">
+          <view class="profile-order-icon-item" wx:for="{{orderStatusItems}}" wx:key="index" bindtap="onViewOrdersByStatus" data-status="{{item.status}}">
+            <view class="profile-order-icon-wrap">
+              <image class="profile-order-icon" src="{{item.icon}}" mode="aspectFit"></image>
+              <view class="profile-order-badge" wx:if="{{item.badge > 0}}">{{item.badge}}</view>
+            </view>
+            <text class="profile-order-icon-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 菜单列表 -->
+      <view class="profile-menu-section">
+        <view class="profile-menu-item" wx:for="{{menuItems}}" wx:key="index" bindtap="onMenuTap" data-index="{{index}}">
+          <view class="profile-menu-left">
+            <image class="profile-menu-icon" src="{{item.icon}}" mode="aspectFit"></image>
+            <text class="profile-menu-name">{{item.name}}</text>
+            <text class="profile-menu-badge" wx:if="{{item.id === 1 && profileFavCount > 0}}">{{profileFavCount}}</text>
+            <text class="profile-menu-badge" wx:if="{{item.id === 3 && profileCouponCount > 0}}">{{profileCouponCount}}张</text>
+          </view>
+          <text class="profile-menu-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 底部信息 -->
+      <view class="profile-footer">
+        <text class="profile-footer-text">乌东苗寨小卖部 v1.0</text>
+      </view>
+    </view>
+    </scroll-view>
+  </view>
+
+  <!-- ==================== 页面9: 全部订单 Orders List ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 8}}">
+    <view class="order-list-header">
+      <view class="order-list-header-row">
+        <text class="order-list-back-btn" bindtap="onBackFromOrders">‹ 返回</text>
+        <text class="order-list-title">全部订单</text>
+        <view style="width: 80rpx;"></view>
+      </view>
+    </view>
+    <view class="orders-page">
+      <!-- 状态筛选 -->
+      <view class="orders-filter">
+        <view class="orders-filter-item {{orderListStatus === '' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="">全部</view>
+        <view class="orders-filter-item {{orderListStatus === 'pending' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="pending">待付款</view>
+        <view class="orders-filter-item {{orderListStatus === 'paid' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="paid">已付款</view>
+        <view class="orders-filter-item {{orderListStatus === 'shipped' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="shipped">已发货</view>
+        <view class="orders-filter-item {{orderListStatus === 'delivering' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="delivering">配送中</view>
+        <view class="orders-filter-item {{orderListStatus === 'completed' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="completed">已完成</view>
+        <view class="orders-filter-item {{orderListStatus === 'cancelled' ? 'active' : ''}}" bindtap="onFilterOrders" data-status="cancelled">已取消</view>
+      </view>
+
+      <scroll-view class="orders-scroll" scroll-y bindscroll="onPageScroll">
+      <view class="orders-list">
+        <view class="orders-loading" wx:if="{{orderListLoading}}">
+          <text>加载中...</text>
+        </view>
+        <view class="orders-empty" wx:if="{{!orderListLoading && orderList.length === 0}}">
+          <text class="orders-empty-icon">📋</text>
+          <text class="orders-empty-text">暂无订单</text>
+        </view>
+        <view class="order-card" wx:for="{{orderList}}" wx:key="index" bindtap="onViewOrderDetail" data-id="{{item._id}}">
+          <view class="order-card-header">
+            <text class="order-card-no">订单号: {{item.order_no}}</text>
+            <text class="order-card-status">{{item.status === 'pending' ? '待付款' : item.status === 'paid' ? '已付款' : item.status === 'shipped' ? '已发货' : item.status === 'delivering' ? '配送中' : item.status === 'completed' ? '已完成' : item.status === 'cancelled' ? '已取消' : item.status}}</text>
+          </view>
+          <view class="order-card-items">
+            <view class="order-card-item" wx:for="{{item.items || []}}" wx:key="idx" bindtap="onOrderProductTap" data-id="{{item.productId}}">
+              <view class="order-card-item-image-box">
+                <image class="order-card-item-image" src="{{item.image || ''}}" mode="aspectFill" binderror="onImageError" />
+              </view>
+              <view class="order-card-item-info">
+                <text class="order-card-item-name">{{item.name}}</text>
+                <view class="order-card-item-bottom">
+                  <text class="order-card-item-price">¥{{item.price}}</text>
+                  <text class="order-card-item-qty">x{{item.quantity}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="order-card-footer">
+            <text class="order-card-total">合计: ¥{{item.total_amount}}</text>
+            <text class="order-card-pay-amount" wx:if="{{item.pay_amount && item.pay_amount != item.total_amount}}">实付: ¥{{item.pay_amount}}</text>
+          </view>
+          <view class="order-card-actions" wx:if="{{item.status === 'pending' || item.status === 'paid' || item.status === 'shipped' || item.status === 'delivering'}}">
+            <view class="order-action-btn order-action-btn-cancel" wx:if="{{item.status === 'pending'}}" bindtap="onCancelOrder" data-id="{{item._id}}">取消订单</view>
+            <view class="order-action-btn order-action-btn-pay" wx:if="{{item.status === 'pending'}}" bindtap="onPayOrder" data-id="{{item._id}}">立即支付</view>
+            <view class="order-action-btn order-action-btn-confirm" wx:if="{{item.status === 'shipped' || item.status === 'delivering'}}" bindtap="onConfirmReceive" data-id="{{item._id}}">确认收货</view>
+          </view>
+        </view>
+      </view>
+      <view class="load-more-btn" wx:if="{{orderListHasMore}}" bindtap="onLoadMoreOrders">
+        <text class="load-more-text" wx:if="{{!orderListLoading}}">加载更多</text>
+        <text class="load-more-text" wx:else>加载中...</text>
+      </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ==================== 页面10: 订单详情 Order Detail ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 9}}">
+    <view class="order-detail-page">
+      <view class="order-detail-header">
+        <view class="order-detail-header-row">
+          <text class="order-detail-back-btn" bindtap="goBack">‹ 返回</text>
+          <text class="order-detail-title">订单详情</text>
+          <view style="width: 80rpx;"></view>
+        </view>
+      </view>
+
+      <scroll-view class="order-detail-scroll" scroll-y bindscroll="onPageScroll">
+        <view class="order-detail-loading" wx:if="{{orderDetailLoading}}">
+          <text>加载中...</text>
+        </view>
+
+        <block wx:if="{{!orderDetailLoading && orderDetail}}">
+          <!-- 状态卡片 -->
+          <view class="order-status-card">
+            <view class="order-status-icon-wrap">
+              <text class="order-status-icon">{{orderDetail.status === 'completed' ? '✓' : orderDetail.status === 'cancelled' ? '✕' : orderDetail.status === 'paid' ? '●' : '○'}}</text>
+            </view>
+            <view class="order-status-info">
+              <text class="order-status-text">{{orderDetail.status === 'pending' ? '等待付款' : orderDetail.status === 'paid' ? '已付款，等待发货' : orderDetail.status === 'shipped' ? '已发货' : orderDetail.status === 'delivering' ? '配送中' : orderDetail.status === 'completed' ? '已完成' : orderDetail.status === 'cancelled' ? '已取消' : orderDetail.status}}</text>
+              <text class="order-status-desc" wx:if="{{orderDetail.status === 'pending'}}">请尽快完成支付，超时订单将自动取消</text>
+              <text class="order-status-desc" wx:if="{{orderDetail.status === 'paid'}}">商家正在准备商品，请耐心等待</text>
+              <text class="order-status-desc" wx:if="{{orderDetail.status === 'shipped' || orderDetail.status === 'delivering'}}">商品正在运送途中</text>
+              <text class="order-status-desc" wx:if="{{orderDetail.status === 'completed'}}">感谢您的购买，欢迎再次光临</text>
+              <text class="order-status-desc" wx:if="{{orderDetail.status === 'cancelled'}}">{{orderDetail.cancel_reason || '订单已取消'}}</text>
+            </view>
+          </view>
+
+          <!-- 收货地址 -->
+          <view class="order-detail-address" wx:if="{{orderDetail.address}}">
+            <view class="order-detail-address-top">
+              <text class="order-detail-address-name">{{orderDetail.address.name}}</text>
+              <text class="order-detail-address-phone">{{orderDetail.address.phone}}</text>
+            </view>
+            <text class="order-detail-address-detail">{{orderDetail.address.province}}{{orderDetail.address.city}}{{orderDetail.address.district}}{{orderDetail.address.detail}}</text>
+          </view>
+
+          <!-- 商品列表 -->
+          <view class="order-detail-items">
+            <view class="order-detail-shop-row">
+              <view style="width: 36rpx; height: 36rpx; background: linear-gradient(135deg, #1E5631 0%, #2D7A4A 100%); border-radius: 8rpx; display: flex; align-items: center; justify-content: center; margin-right: 12rpx;">
+                <text style="font-size: 20rpx; color: #FFFFFF; font-weight: bold;">乌</text>
+              </view>
+              <text style="font-size: 26rpx; font-weight: 600; color: #3E3A35;">乌东苗寨小卖部</text>
+            </view>
+            <view class="order-detail-item" wx:for="{{orderDetail.items}}" wx:key="idx">
+              <view class="order-detail-item-image-box">
+                <image class="order-detail-item-image" src="{{item.image || ''}}" mode="aspectFill" binderror="onImageError" />
+              </view>
+              <view class="order-detail-item-info">
+                <text class="order-detail-item-name">{{item.name}}</text>
+                <view class="order-detail-item-bottom">
+                  <text class="order-detail-item-price">¥{{item.price}}</text>
+                  <text class="order-detail-item-qty">x{{item.quantity}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 订单信息 -->
+          <view class="order-detail-info-section">
+            <view class="order-detail-info-row">
+              <text class="order-detail-info-label">订单编号</text>
+              <text class="order-detail-info-value selectable">{{orderDetail.order_no}}</text>
+            </view>
+            <view class="order-detail-info-row">
+              <text class="order-detail-info-label">下单时间</text>
+              <text class="order-detail-info-value">{{orderDetail.createdAt}}</text>
+            </view>
+            <view class="order-detail-info-row" wx:if="{{orderDetail.paidAt}}">
+              <text class="order-detail-info-label">付款时间</text>
+              <text class="order-detail-info-value">{{orderDetail.paidAt}}</text>
+            </view>
+            <view class="order-detail-info-row">
+              <text class="order-detail-info-label">商品总额</text>
+              <text class="order-detail-info-value">¥{{orderDetail.total_amount}}</text>
+            </view>
+            <view class="order-detail-info-row" wx:if="{{orderDetail.discount_amount > 0}}">
+              <text class="order-detail-info-label">优惠减免</text>
+              <text class="order-detail-info-value" style="color: #D35D47;">-¥{{orderDetail.discount_amount}}</text>
+            </view>
+            <view class="order-detail-info-row" style="border-bottom: none;">
+              <text class="order-detail-info-label" style="font-weight: 700;">实付金额</text>
+              <text class="order-detail-info-value" style="font-size: 36rpx; font-weight: 800; color: #D35D47;">¥{{orderDetail.pay_amount || orderDetail.total_amount}}</text>
+            </view>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="order-detail-actions" wx:if="{{orderDetail.status === 'pending' || orderDetail.status === 'paid' || orderDetail.status === 'shipped' || orderDetail.status === 'delivering' || orderDetail.status === 'completed' || orderDetail.status === 'cancelled'}}">
+            <view class="order-detail-action-btn order-detail-action-cancel" wx:if="{{orderDetail.status === 'pending'}}" bindtap="onCancelOrder" data-id="{{orderDetail._id}}">取消订单</view>
+            <view class="order-detail-action-btn order-detail-action-pay" wx:if="{{orderDetail.status === 'pending'}}" bindtap="onPayOrder" data-id="{{orderDetail._id}}">立即支付</view>
+            <view class="order-detail-action-btn order-detail-action-confirm" wx:if="{{orderDetail.status === 'shipped' || orderDetail.status === 'delivering'}}" bindtap="onConfirmReceive" data-id="{{orderDetail._id}}">确认收货</view>
+            <view class="order-detail-action-btn order-detail-action-delete-order" wx:if="{{orderDetail.status === 'cancelled' || orderDetail.status === 'completed'}}" bindtap="onDeleteOrder" data-id="{{orderDetail._id}}">删除订单</view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+</view>
+
+  <!-- ==================== 页面10: 发现 Discover ==================== -->
+  <view class="page-content {{pageTransition}}" wx:if="{{currentPage === 10}}">
+    <view class="discover-page">
+      <scroll-view class="discover-scroll" scroll-y bindscroll="onPageScroll" refresher-enabled refresher-default-text="下拉刷新" refresher-refreshing="{{discoverLoading}}" bindrefresherrefresh="loadDiscoverData">
+
+        <view class="discover-header">
+          <text class="discover-header-title">发现好物</text>
+          <text class="discover-header-subtitle">来自乌东苗寨的自然馈赠</text>
+        </view>
+
+        <!-- 热销推荐 -->
+        <view class="discover-section">
+          <view class="discover-section-header">
+            <text class="discover-section-title">🔥 热销推荐</text>
+          </view>
+          <view class="discover-grid" wx:if="{{discoverFeatured.length > 0}}">
+            <view class="discover-item" wx:for="{{discoverFeatured}}" wx:key="index" bindtap="onDiscoverProductTap" data-id="{{item._id}}">
+              <view class="discover-item-image-box">
+                <image class="discover-item-image" src="{{item.image || ''}}" mode="aspectFill" binderror="onImageError" />
+              </view>
+              <view class="discover-item-info">
+                <text class="discover-item-name" wx:if="{{item.name}}">{{item.name}}</text>
+                <text class="discover-item-price" wx:if="{{item.price}}">¥{{item.price}}</text>
+                <text class="discover-item-sales" wx:if="{{item.sales !== undefined}}">已售{{item.sales}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="discover-empty" wx:else>
+            <text class="discover-empty-text">暂无推荐商品</text>
+          </view>
+        </view>
+
+        <!-- 新品上新 -->
+        <view class="discover-section">
+          <view class="discover-section-header">
+            <text class="discover-section-title">✨ 新品上新</text>
+          </view>
+          <view class="discover-grid" wx:if="{{discoverNewArrivals.length > 0}}">
+            <view class="discover-item" wx:for="{{discoverNewArrivals}}" wx:key="index" bindtap="onDiscoverProductTap" data-id="{{item._id}}">
+              <view class="discover-item-image-box">
+                <image class="discover-item-image" src="{{item.image || ''}}" mode="aspectFill" binderror="onImageError" />
+              </view>
+              <view class="discover-item-info">
+                <text class="discover-item-name" wx:if="{{item.name}}">{{item.name}}</text>
+                <text class="discover-item-price" wx:if="{{item.price}}">¥{{item.price}}</text>
+                <text class="discover-item-sales" wx:if="{{item.sales !== undefined}}">已售{{item.sales}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="discover-empty" wx:else>
+            <text class="discover-empty-text">暂无新品</text>
+          </view>
+        </view>
+
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ==================== 地址编辑弹窗 ==================== -->
+  <view class="address-modal-mask" wx:if="{{showAddressForm}}" bindtap="onCancelAddressForm"></view>
+  <view class="address-modal" wx:if="{{showAddressForm}}">
+    <view class="address-modal-header">
+      <text class="address-modal-title">{{addressFormData.id ? '编辑地址' : '新增地址'}}</text>
+      <text class="address-modal-close" bindtap="onCancelAddressForm">✕</text>
+    </view>
+    <view class="address-modal-body">
+      <view class="address-form-item">
+        <text class="address-form-label">收货人</text>
+        <input class="address-form-input" placeholder="请输入收货人姓名" value="{{addressFormData.name}}" bindinput="onAddressFormInput" data-field="name" />
+      </view>
+      <view class="address-form-item">
+        <text class="address-form-label">手机号</text>
+        <input class="address-form-input" placeholder="请输入手机号" type="number" maxlength="11" value="{{addressFormData.phone}}" bindinput="onAddressFormInput" data-field="phone" />
+      </view>
+      <view class="address-form-item">
+        <text class="address-form-label">省份</text>
+        <input class="address-form-input" placeholder="请输入省份" value="{{addressFormData.province}}" bindinput="onAddressFormInput" data-field="province" />
+      </view>
+      <view class="address-form-item">
+        <text class="address-form-label">城市</text>
+        <input class="address-form-input" placeholder="请输入城市" value="{{addressFormData.city}}" bindinput="onAddressFormInput" data-field="city" />
+      </view>
+      <view class="address-form-item">
+        <text class="address-form-label">区县</text>
+        <input class="address-form-input" placeholder="请输入区县" value="{{addressFormData.district}}" bindinput="onAddressFormInput" data-field="district" />
+      </view>
+      <view class="address-form-item">
+        <text class="address-form-label">详细地址</text>
+        <input class="address-form-input" placeholder="请输入详细地址" value="{{addressFormData.detail}}" bindinput="onAddressFormInput" data-field="detail" />
+      </view>
+      <view class="address-form-item address-form-checkbox-item" bindtap="onToggleAddressDefault">
+        <text class="address-form-label">设为默认地址</text>
+        <view class="address-form-checkbox {{addressFormData.is_default ? 'checked' : ''}}">
+          <text wx:if="{{addressFormData.is_default}}">✓</text>
+        </view>
+      </view>
+    </view>
+    <view class="address-modal-footer">
+      <view class="address-modal-btn address-modal-btn-delete" wx:if="{{addressFormData.id}}" bindtap="onDeleteAddress">删除</view>
+      <view class="address-modal-btn address-modal-btn-cancel" bindtap="onCancelAddressForm">取消</view>
+      <view class="address-modal-btn address-modal-btn-save" bindtap="onSaveAddress">保存</view>
+    </view>
+  </view>
